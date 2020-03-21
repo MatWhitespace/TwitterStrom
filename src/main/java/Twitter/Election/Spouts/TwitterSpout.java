@@ -18,7 +18,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class TwitterSpout extends BaseRichSpout {
     private SpoutOutputCollector collector;
     private TwitterStream twitter;
-    private ArrayBlockingQueue<String> queque;
+    private ArrayBlockingQueue<Status> queque;
     private String keyword;
 
     public TwitterSpout(String keyword){
@@ -45,41 +45,41 @@ public class TwitterSpout extends BaseRichSpout {
         collector=spoutOutputCollector;
         queque = new ArrayBlockingQueue(100, true);
 
-        ConfigurationBuilder cb = new ConfigurationBuilder();
-        cb.setDebugEnabled(true)
+        ConfigurationBuilder cb = new ConfigurationBuilder()
                 .setOAuthConsumerKey("ii6oFK75SHTniv70ALoDnw2vN")
                 .setOAuthConsumerSecret("Gd6CVOhuysjKPpdh8t99OTXZFUMaPNAV0Ma3ePwrEG3Jg5jxLm")
-                .setOAuthAccessToken("1235255325869174788-RzMdFRpm3TAQPd2ll94YaZMpdBhBlp")
-                .setOAuthAccessTokenSecret("9JN13Et2xWt82KdCm7jBvxuvHJ1xersyU1dN7J9pQj0xB");
+                .setOAuthAccessToken("1235255325869174788-iDQ6HJ8E4PcZv32h3Z228TAl57Q4w5")
+                .setOAuthAccessTokenSecret("Gu14r8wj06nXaqwtEkPrdDJ8e9YqlDbjttcvoLwbafNob");
         TwitterStreamFactory tf = new TwitterStreamFactory(cb.build());
         twitter = tf.getInstance();
         twitter.addListener(new StatusAdapter() {
             public void onStatus(Status status) {
-                double latitude = status.getGeoLocation().getLatitude();
-                double longitude = status.getGeoLocation().getLongitude();
-                if(!status.isRetweet() && isUSA(latitude, longitude) && status.getLang()=="en")
-                    queque.add(status.getUser().getId()+status.getUser().getFollowersCount()+"&TEXT:"+status.getText());
+                if (!status.isRetweet() && status.getLang().equals("en")) {
+                    if (status.getGeoLocation() != null && isUSA(status.getGeoLocation().getLatitude(), status.getGeoLocation().getLongitude()))
+                        queque.add(status);
+                }
             }
         });
-        twitter.filter(keyword);
+        FilterQuery query = new FilterQuery();
+        query.track(keyword);
+        twitter.filter(query);
     }
 
     public void nextTuple() {
-        String s = queque.poll();
+        Status s = queque.poll();
         if (s == null) {
             try {
-                Thread.currentThread().sleep(1000);
+                Thread.currentThread().sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         } else {
-            collector.emit(new Values(s));
-
+            collector.emit(new Values(s.getUser(),s.getUser().getFollowersCount(),s.getText(), keyword));
         }
     }
 
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declare(new Fields("Tweet"));
+        outputFieldsDeclarer.declare(new Fields("User","Followers","Tweet","Candidate"));
     }
 
     public void close(){
