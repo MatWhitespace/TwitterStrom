@@ -19,7 +19,7 @@ public class ReportBolt extends BaseWindowedBolt {
     public void prepare(Map<String, Object> topoConf, TopologyContext context, OutputCollector collector) {
         Trump = Biden = 0L;
         try {
-            File f = new File("/srv/nfs4/Result.txt");
+            File f = new File("/srv/nfs4/Result.txt");//Se siamo client nfs: '/mnt/public/'
             f.setWritable(true,false);
             pw = new PrintWriter(f);
         } catch (FileNotFoundException e) {

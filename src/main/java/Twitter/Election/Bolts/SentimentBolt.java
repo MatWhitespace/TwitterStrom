@@ -21,7 +21,7 @@ public class SentimentBolt extends BaseRichBolt {
 
     public String[] getWordsArray(String fileName) throws IOException {
         StringBuilder sb = new StringBuilder();
-        BufferedReader input = new BufferedReader(new FileReader("/srv/nfs4"+fileName));
+        BufferedReader input = new BufferedReader(new FileReader("/srv/nfs4/"+fileName));//Se siamo client nfs: '/mnt/public/'
         String temp;
         while ((temp = input.readLine()) != null)
             sb.append(temp+",");
