@@ -49,7 +49,7 @@ public class ReportBolt extends BaseWindowedBolt {
 
     @Override
     public void cleanup() {
-        pw.println("Finish");
+        pw.println("\nFinish");
         pw.close();
         super.cleanup();
     }
