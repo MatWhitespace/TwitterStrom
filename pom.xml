@@ -74,7 +74,7 @@
                     <includePluginDependencies>false</includePluginDependencies>
 
                     <classpathScope>compile</classpathScope>
-                    <mainClass></mainClass>
+                    <mainClass>Twitter.Election.Launcher.ElectionTopologyBuilder</mainClass>
                 </configuration>
             </plugin>
             <plugin>
