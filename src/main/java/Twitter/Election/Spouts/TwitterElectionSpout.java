@@ -15,14 +15,14 @@ import twitter4j.conf.ConfigurationBuilder;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 
-public class TwitterSpout extends BaseRichSpout {
+public class TwitterElectionSpout extends BaseRichSpout {
     private SpoutOutputCollector collector;
     private TwitterStream twitter;
     private ArrayBlockingQueue<Status> queque;
     private String keyword;
     private JOpenCageGeocoder jOpenCageGeocoder;
 
-    public TwitterSpout(String keyword){
+    public TwitterElectionSpout(String keyword){
         this.keyword=keyword;
     }
 

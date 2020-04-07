@@ -3,25 +3,34 @@ package Twitter.Election.Launcher;
 import Twitter.Election.Bolts.ReportBolt;
 import Twitter.Election.Bolts.SentimentBolt;
 import Twitter.Election.Bolts.VoteBolt;
-import Twitter.Election.Spouts.TwitterSpout;
+import Twitter.Election.Spouts.TwitterElectionSpout;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.StormSubmitter;
 import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.topology.base.BaseWindowedBolt.Count;
 
+import java.io.*;
 import java.util.concurrent.TimeUnit;
 
 public class ElectionTopologyBuilder {
 
     public static void main(String[] args) throws Exception {
-        boolean local=false;
+        boolean local=true;
+        BufferedReader positive=null, negative=null;
+        try{
+            positive = new BufferedReader(new FileReader("/srv/nfs4/positive-words.txt"));
+            negative = new BufferedReader(new FileReader("/srv/nfs4/negative-words.txt"));
+        }catch (IOException e){
+            System.out.println("Errore file main");
+        }
+
         TopologyBuilder builder = new TopologyBuilder();
 
-        builder.setSpout("TrumpTweets", new TwitterSpout(("Trump")), 1);
-        builder.setSpout("BidenTweets", new TwitterSpout(("Biden")), 1);
+        builder.setSpout("TrumpTweets", new TwitterElectionSpout(("Trump")), 1);
+        builder.setSpout("BidenTweets", new TwitterElectionSpout(("Biden")), 1);
 
-        builder.setBolt("Sentiment", new SentimentBolt(),1).allGrouping("TrumpTweets").allGrouping("BidenTweets");
+        builder.setBolt("Sentiment", new SentimentBolt(positive,negative),1).allGrouping("TrumpTweets").allGrouping("BidenTweets");
         builder.setBolt("Vote", new VoteBolt(), 1).allGrouping("Sentiment");
 
         builder.setBolt("Report", new ReportBolt().withWindow(new Count(30), new Count(30)), 1).allGrouping("Vote");

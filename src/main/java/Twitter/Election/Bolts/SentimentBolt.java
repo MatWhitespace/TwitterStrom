@@ -19,24 +19,26 @@ public class SentimentBolt extends BaseRichBolt {
     private OutputCollector collector;
     private String[] positiveWords, negativeWords;
 
-    public String[] getWordsArray(String fileName) throws IOException {
+    public SentimentBolt(BufferedReader positive, BufferedReader negative){
+        try {
+            positiveWords = getWordsArray(positive);
+            negativeWords = getWordsArray(negative);
+        }catch (IOException e){
+            System.err.println("Errore file input");
+        }
+    }
+
+    public String[] getWordsArray(BufferedReader file) throws IOException{
         StringBuilder sb = new StringBuilder();
-        BufferedReader input = new BufferedReader(new FileReader("/srv/nfs4/"+fileName));//Se siamo client nfs: '/mnt/public/'
         String temp;
-        while ((temp = input.readLine()) != null)
+        while ((temp = file.readLine()) != null)
             sb.append(temp+",");
-        input.close();
+        file.close();
         return sb.toString().split(",");
     }
 
     public void prepare(Map<String, Object> map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector=outputCollector;
-        try {
-            this.positiveWords = getWordsArray("positive-words.txt");
-            this.negativeWords = getWordsArray("negative-words.txt");
-        } catch (IOException e) {
-            System.err.println("Errore di lettura dei file");
-        }
     }
 
     public float getRank(String tweet) {
@@ -61,6 +63,8 @@ public class SentimentBolt extends BaseRichBolt {
 
     public void execute(Tuple tuple) {
         String tweet = tuple.getStringByField("Tweet");
+        tweet.replaceAll("@[A-Za-z0-9]+"," ");
+        tweet.replaceAll("[^a-zA-Z]"," ");
         float rank = getRank(tweet);
         int rankField = 0; //voto neutrale
         if (rank > 0.3f) rankField=1; //voto positivo
