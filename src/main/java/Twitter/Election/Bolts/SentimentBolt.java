@@ -28,7 +28,7 @@ public class SentimentBolt extends BaseRichBolt {
         }
     }
 
-    public String[] getWordsArray(BufferedReader file) throws IOException{
+    private String[] getWordsArray(BufferedReader file) throws IOException{
         StringBuilder sb = new StringBuilder();
         String temp;
         while ((temp = file.readLine()) != null)

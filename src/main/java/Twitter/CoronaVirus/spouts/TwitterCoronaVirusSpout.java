@@ -60,7 +60,7 @@ public class TwitterCoronaVirusSpout extends BaseRichSpout {
             }
         } else {
             if (sent != null)
-                collector.emit("sent",new Values(sent.getText()));
+                collector.emit("sent",new Values(sent.getText()), sent.getUser().isVerified());
             if (tot != null)
                 collector.emit("tot", new Values(tot.getGeoLocation().getLatitude(), tot.getGeoLocation().getLongitude()));
             if (ret != null)
@@ -70,7 +70,7 @@ public class TwitterCoronaVirusSpout extends BaseRichSpout {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declareStream("sent",new Fields("tweet"));
+        outputFieldsDeclarer.declareStream("sent",new Fields("tweet","verified"));
         outputFieldsDeclarer.declareStream("tot",new Fields("latitude","longitude"));
         outputFieldsDeclarer.declareStream("ret",new Fields("tweet","retCount"));
     }
