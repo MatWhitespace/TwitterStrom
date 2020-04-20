@@ -33,11 +33,12 @@ public class TwitterCoronaVirusSpout extends BaseRichSpout {
         twitter = tf.getInstance();
         twitter.addListener(new StatusAdapter() {
             public void onStatus(Status status) {
-                if (!status.isRetweet() && status.getLang().equals("en"))
-                    sentimentTweet.add(status);
-                if (!status.isRetweet())
+                if(!status.isRetweet()) {
+                    if (status.getLang().equals("en"))
+                        sentimentTweet.add(status);
                     totalTweet.add(status);
-                if (status.getLang().equals("en"))
+                }
+                else if (status.getLang().equals("en"))
                     retwetted.add(status);
             }
         });

@@ -8,19 +8,23 @@ import java.util.HashMap;
 
 public class CountBolt extends BaseWindowedBolt {
     private HashMap<String, Long> counter;
+    private String name;
 
-    public CountBolt(){
+    public CountBolt(String name){
         counter = new HashMap<>();
+        this.name=name;
     }
 
     @Override
     public void execute(TupleWindow tupleWindow) {
+        String field =null;
         for (Tuple t :tupleWindow.get()) {
-            String trend = t.getStringByField("trend");
-            if (counter.containsKey(trend))
-                counter.put(trend, counter.get(trend));
+            if (t.getSourceStreamId().equals(name+"Stream"))
+                field = t.getStringByField(name);
+            if (counter.containsKey(field))
+                counter.put(field, counter.get(field));
             else
-                counter.put(trend,1L);
+                counter.put(field,1L);
         }
 
         for (String key : counter.keySet()) {

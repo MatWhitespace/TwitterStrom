@@ -44,19 +44,24 @@ public class SentBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple tuple) {
-        if (!tuple.getSourceStreamId().equals("sent"))
-            return;
-        String tweet = tuple.getStringByField("tweet");
-        tweet.replaceAll("@[A-Za-z0-9]+"," ");
-        tweet.replaceAll("[^a-zA-Z]"," ");
-        String[] tweetPieces = tweet.split(" ");
-        for (int i =0; i<tweetPieces.length; i++)
-            if (!stopWords.contains(tweetPieces[i]))
-                collector.emit("sent",new Values(tweetPieces[i]));
+        if (tuple.getSourceStreamId().equals("sent")) {
+            boolean verified = tuple.getBooleanByField("verified");
+            String tweet = tuple.getStringByField("tweet");
+            tweet.replaceAll("@[A-Za-z0-9]+", " ");
+            tweet.replaceAll("[^a-zA-Z]", " ");
+            String[] tweetPieces = tweet.split(" ");
+            for (int i = 0; i < tweetPieces.length; i++)
+                if (!stopWords.contains(tweetPieces[i]))
+                    if (verified)
+                        collector.emit("verifiedStream", new Values(tweetPieces[i]));
+                    else
+                        collector.emit("trendStream", new Values(tweetPieces[i]));
+        }
     }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declare(new Fields("trend"));
+        outputFieldsDeclarer.declareStream("trendStream",new Fields("trend"));
+        outputFieldsDeclarer.declareStream("verifiedStream",new Fields("verified"));
     }
 }

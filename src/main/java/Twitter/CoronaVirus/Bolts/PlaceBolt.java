@@ -42,14 +42,18 @@ public class PlaceBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple tuple) {
-        Double latitude = tuple.getDoubleByField("latitude");
-        Double longitude = tuple.getDoubleByField("longitude");
-        String[] place = decode(latitude, longitude);
-        collector.emit(new Values(place[0],place[1]));
+        if (tuple.getSourceStreamId().equals("tot")) {
+            Double latitude = tuple.getDoubleByField("latitude");
+            Double longitude = tuple.getDoubleByField("longitude");
+            String[] place = decode(latitude, longitude);
+            collector.emit("cityStream", new Values(place[0]));
+            collector.emit("stateStream", new Values(place[1]));
+        }
     }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declare(new Fields("city","state"));
+        outputFieldsDeclarer.declareStream("cityStream",new Fields("city"));
+        outputFieldsDeclarer.declareStream("stateStream", new Fields("state"));
     }
 }
