@@ -38,7 +38,7 @@ public class TwitterCoronaVirusSpout extends BaseRichSpout {
                         sentimentTweet.add(status);
                     totalTweet.add(status);
                 }
-                else if (status.getLang().equals("en"))
+                else
                     retwetted.add(status);
             }
         });
