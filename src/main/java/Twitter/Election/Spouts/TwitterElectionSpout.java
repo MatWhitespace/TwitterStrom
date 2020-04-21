@@ -75,12 +75,12 @@ public class TwitterElectionSpout extends BaseRichSpout {
                 e.printStackTrace();
             }
         } else {
-            collector.emit(new Values(s.getUser(),s.getUser().getFollowersCount(),s.getText(), keyword));
+            collector.emit("electionStream",new Values(s.getUser(),s.getUser().getFollowersCount(),s.getText(), keyword));
         }
     }
 
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declare(new Fields("User","Followers","Tweet","Candidate"));
+        outputFieldsDeclarer.declareStream("electionStream",new Fields("User","Followers","Tweet","Candidate"));
     }
 
     public void close(){

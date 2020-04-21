@@ -69,11 +69,16 @@ public class SentimentBolt extends BaseRichBolt {
         int rankField = 0; //voto neutrale
         if (rank > 0.3f) rankField=1; //voto positivo
         else if (rank < -0.3f) rankField=-1; //voto negativo
-        if(rankField!=0)
-            collector.emit(new Values(tuple.getValue(0), tuple.getValue(1),rankField, tuple.getValue(3)));
+        if(rankField!=0) {
+            if (tuple.getSourceStreamId().equals("electionStream"))
+                collector.emit("electionStream",new Values(tuple.getValue(0), tuple.getValue(1), rankField, tuple.getValue(3)));
+            else
+                collector.emit("coronaStream",new Values(rank));
+        }
     }
 
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declare(new Fields("User","Followers","Rank","Candidate"));
+        outputFieldsDeclarer.declareStream("electionStream",new Fields("User","Followers","Rank","Candidate"));
+        outputFieldsDeclarer.declareStream("coronaStream", new Fields("rank"));
     }
 }

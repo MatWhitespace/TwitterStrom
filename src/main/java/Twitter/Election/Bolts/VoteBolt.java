@@ -23,14 +23,16 @@ public class VoteBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple tuple) {
-        long userId = ((User) tuple.getValue(0)).getId();
-        int followers = tuple.getIntegerByField("Followers");
-        int rank = tuple.getIntegerByField("Rank");
-        int vote = getVote(followers)*rank;
-        Integer storico = userVote.get(userId);
-        if(storico != null) vote += storico/2;
-        userVote.put(userId,vote);
-        collector.emit(new Values(tuple.getStringByField("Candidate"), vote));
+        if(tuple.getSourceStreamId().equals("electionStream")) {
+            long userId = ((User) tuple.getValue(0)).getId();
+            int followers = tuple.getIntegerByField("Followers");
+            int rank = tuple.getIntegerByField("Rank");
+            int vote = getVote(followers) * rank;
+            Integer storico = userVote.get(userId);
+            if (storico != null) vote += storico / 2;
+            userVote.put(userId, vote);
+            collector.emit("electionStream",new Values(tuple.getStringByField("Candidate"), vote));
+        }
     }
 
     private int getVote(int followers) {
@@ -48,6 +50,6 @@ public class VoteBolt extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declare(new Fields("Candidate","Vote"));
+        outputFieldsDeclarer.declareStream("electionStream",new Fields("Candidate","Vote"));
     }
 }
