@@ -4,6 +4,7 @@ import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseRichSpout;
+import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
@@ -52,14 +53,15 @@ public class GenericSpout extends BaseRichSpout {
             }
         }else
             if (tweet != null)
-                collector.emit("tot", new Values());
+                collector.emit("tot", new Values(tweet));
             if (langTweet != null)
-                collector.emit("lang", new Values());
+                collector.emit("lang", new Values(tweet.getText()));
     }
 
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-
+        outputFieldsDeclarer.declareStream("tot", new Fields("status"));
+        outputFieldsDeclarer.declareStream("lang", new Fields("tweet"));
     }
 }
