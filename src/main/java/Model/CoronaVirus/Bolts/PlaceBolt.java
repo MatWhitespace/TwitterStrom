@@ -1,8 +1,7 @@
-package Twitter.CoronaVirus.Bolts;
+package Model.CoronaVirus.Bolts;
 
 
 import com.byteowls.jopencage.JOpenCageGeocoder;
-import com.byteowls.jopencage.model.JOpenCageForwardRequest;
 import com.byteowls.jopencage.model.JOpenCageResponse;
 import com.byteowls.jopencage.model.JOpenCageReverseRequest;
 import org.apache.storm.task.OutputCollector;
@@ -17,11 +16,12 @@ import java.util.Map;
 
 public class PlaceBolt extends BaseRichBolt {
     private OutputCollector collector;
-    private JOpenCageGeocoder jOpenCageGeocoder = new JOpenCageGeocoder("0dea83d0785f420f95a33f8f912bb038");
+    private JOpenCageGeocoder jOpenCageGeocoder;
 
     @Override
     public void prepare(Map<String, Object> map, TopologyContext topologyContext, OutputCollector outputCollector) {
         collector = outputCollector;
+        jOpenCageGeocoder = new JOpenCageGeocoder("0dea83d0785f420f95a33f8f912bb038");
     }
 
     private String[] decode(double latitude, double longitude){
@@ -35,6 +35,10 @@ public class PlaceBolt extends BaseRichBolt {
 
         String[] res = response.getResults().get(0).getFormatted().split(",");
         String[] result = new String[2];
+        for (int i =0; i<res.length; i++){
+            System.err.print(res[i]+"\t");
+        }
+        System.out.println();
         result[0] = res[res.length-2];
         result[1] = res[res.length-1];
         return result;

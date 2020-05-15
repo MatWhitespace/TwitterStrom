@@ -1,4 +1,4 @@
-package Twitter.Election.Spouts;
+package Model.Election.Spouts;
 
 import com.byteowls.jopencage.JOpenCageGeocoder;
 import com.byteowls.jopencage.model.JOpenCageForwardRequest;
@@ -80,7 +80,7 @@ public class TwitterElectionSpout extends BaseRichSpout {
     }
 
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declareStream("electionStream",new Fields("User","Followers","Tweet","Candidate"));
+        outputFieldsDeclarer.declareStream("electionStream",new Fields("User","Followers","tweet","Candidate"));
     }
 
     public void close(){

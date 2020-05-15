@@ -1,4 +1,4 @@
-package Twitter.CoronaVirus.spouts;
+package Model.CoronaVirus.spouts;
 
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -38,8 +38,9 @@ public class TwitterCoronaVirusSpout extends BaseRichSpout {
                         sentimentTweet.add(status);
                     totalTweet.add(status);
                 }
-                else
-                    retwetted.add(status);
+                else {
+                    retwetted.add(status.getRetweetedStatus());
+                }
             }
         });
 
@@ -61,8 +62,8 @@ public class TwitterCoronaVirusSpout extends BaseRichSpout {
             }
         } else {
             if (sent != null)
-                collector.emit("sent",new Values(sent.getText()), sent.getUser().isVerified());
-            if (tot != null)
+                collector.emit("sent",new Values(sent.getText(), sent.getUser().isVerified()));
+            if (tot != null && tot.getGeoLocation() != null)
                 collector.emit("tot", new Values(tot.getGeoLocation().getLatitude(), tot.getGeoLocation().getLongitude()));
             if (ret != null)
                 collector.emit("ret",new Values(ret.getId(),ret.getText(), ret.getRetweetCount()));
@@ -74,5 +75,10 @@ public class TwitterCoronaVirusSpout extends BaseRichSpout {
         outputFieldsDeclarer.declareStream("sent",new Fields("tweet","verified"));
         outputFieldsDeclarer.declareStream("tot",new Fields("latitude","longitude"));
         outputFieldsDeclarer.declareStream("ret",new Fields("id","tweet","retCount"));
+    }
+
+    public void close(){
+        twitter.shutdown();
+        super.close();
     }
 }

@@ -1,28 +1,42 @@
-package Twitter.CoronaVirus.Bolts;
+package Model.CoronaVirus.Bolts;
 
+import org.apache.storm.task.OutputCollector;
+import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.windowing.TupleWindow;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.stream.Collectors.toList;
 
 public class RetweetBolt extends BaseWindowedBolt {
-    private HashMap<Long,String> tweet;
-    private HashMap<Long,Integer> count;
+    private ConcurrentHashMap<Long,String> tweet;
+    private ConcurrentHashMap<Long,Integer> count;
     private LocalDateTime tomorrowMidnight;
+    private PrintWriter pw;
 
-    public RetweetBolt(){
-        tweet = new HashMap<>();
-        count = new HashMap<>();
+
+    public void prepare(Map<String, Object> map, TopologyContext topologyContext, OutputCollector outputCollector) {
+        tweet = new ConcurrentHashMap<>();
+        count = new ConcurrentHashMap<>();
         LocalDateTime todayMidnight = LocalDateTime.of(LocalDate.now(ZoneId.of("Europe/Rome")), LocalTime.MIDNIGHT);
-        LocalDateTime tomorrowMidnight = todayMidnight.plusDays(1);
+        tomorrowMidnight = todayMidnight.plusDays(1);
+        try{
+            pw = new PrintWriter(new File("RetweetResult.txt"));
+        }catch (IOException e){
+            System.err.println("errore scrittura retweet");
+        }
     }
+
     @Override
     public void execute(TupleWindow tupleWindow) {
         for(Tuple t : tupleWindow.get()){
@@ -41,14 +55,21 @@ public class RetweetBolt extends BaseWindowedBolt {
                 .collect(toList());
 
         for(long key : sorted)
-            System.out.println(tweet.get(key));
+            pw.println(count.get(key)+"\n");
+        pw.println();
 
         LocalDateTime now = LocalDateTime.now();
         if(now.isAfter(tomorrowMidnight)){
-            count = new HashMap<>();
-            tweet = new HashMap<>();
+            count = new ConcurrentHashMap<>();
+            tweet = new ConcurrentHashMap<>();
             tomorrowMidnight = tomorrowMidnight.plusDays(1);
         }
     }
 
+    @Override
+    public void cleanup() {
+        pw.println("\nFinish");
+        pw.close();
+        super.cleanup();
+    }
 }

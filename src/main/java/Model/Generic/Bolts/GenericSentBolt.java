@@ -1,6 +1,5 @@
-package Twitter.Generic.Bolts;
+package Model.Generic.Bolts;
 
-import edu.stanford.nlp.ie.machinereading.structure.EntityMention;
 import edu.stanford.nlp.pipeline.*;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -34,10 +33,12 @@ public class GenericSentBolt extends BaseRichBolt {
     @Override
     public void execute(Tuple tuple) {
         String tweet = tuple.getStringByField("tweet");
+        System.err.println("Ciao"); //non arriva
         CoreDocument tweetAnn = new CoreDocument(tweet);
         pipeline.annotate(tweetAnn);
-        for (CoreEntityMention em : tweetAnn.entityMentions())
-            collector.emit("sentOutput", new Values(em.text(),em.entityType()));
+        for (CoreEntityMention em : tweetAnn.entityMentions()) {
+            collector.emit("sentOutput", new Values(em.text(), em.entityType()));
+        }
     }
 
     @Override

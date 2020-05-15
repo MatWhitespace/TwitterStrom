@@ -1,4 +1,4 @@
-package Twitter.Generic.Spouts;
+package Model.Generic.Spouts;
 
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -21,6 +21,8 @@ public class GenericSpout extends BaseRichSpout {
     public void open(Map<String, Object> map, TopologyContext topologyContext, SpoutOutputCollector spoutOutputCollector) {
         this.collector=spoutOutputCollector;
         tweets = new ArrayBlockingQueue(100, true);
+        langTweets = new ArrayBlockingQueue(100, true);
+
 
         ConfigurationBuilder cb = new ConfigurationBuilder()
                 .setOAuthConsumerKey("ii6oFK75SHTniv70ALoDnw2vN")
@@ -39,23 +41,27 @@ public class GenericSpout extends BaseRichSpout {
             }
         });
 
+        twitter.sample();
+
     }
 
     @Override
     public void nextTuple() {
         Status tweet = tweets.poll();
         Status langTweet = langTweets.poll();
-        if(tweet==null && langTweet==null) {
+        if (tweet == null && langTweet == null) {
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }else
-            if (tweet != null)
+        } else {
+            if (tweet != null) {
                 collector.emit("tot", new Values(tweet));
-            if (langTweet != null)
-                collector.emit("lang", new Values(tweet.getText()));
+            }if (langTweet != null) {
+                collector.emit("lang", new Values(langTweet.getText()));
+            }
+        }
     }
 
 

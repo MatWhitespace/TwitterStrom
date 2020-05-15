@@ -1,4 +1,4 @@
-package Twitter.Election.Bolts;
+package Model.Election.Bolts;
 
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;

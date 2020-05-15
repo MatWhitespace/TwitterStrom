@@ -1,4 +1,4 @@
-package Twitter.Election.Bolts;
+package Model.Election.Bolts;
 
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -8,9 +8,6 @@ import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,22 +16,9 @@ public class SentimentBolt extends BaseRichBolt {
     private OutputCollector collector;
     private String[] positiveWords, negativeWords;
 
-    public SentimentBolt(BufferedReader positive, BufferedReader negative){
-        try {
-            positiveWords = getWordsArray(positive);
-            negativeWords = getWordsArray(negative);
-        }catch (IOException e){
-            System.err.println("Errore file input");
-        }
-    }
-
-    private String[] getWordsArray(BufferedReader file) throws IOException{
-        StringBuilder sb = new StringBuilder();
-        String temp;
-        while ((temp = file.readLine()) != null)
-            sb.append(temp+",");
-        file.close();
-        return sb.toString().split(",");
+    public SentimentBolt(String[] positive, String[] negative){
+        positiveWords = positive;
+        negativeWords = negative;
     }
 
     public void prepare(Map<String, Object> map, TopologyContext topologyContext, OutputCollector outputCollector) {
@@ -62,7 +46,7 @@ public class SentimentBolt extends BaseRichBolt {
     }
 
     public void execute(Tuple tuple) {
-        String tweet = tuple.getStringByField("Tweet");
+        String tweet = tuple.getStringByField("tweet");
         tweet.replaceAll("@[A-Za-z0-9]+"," ");
         tweet.replaceAll("[^a-zA-Z]"," ");
         float rank = getRank(tweet);

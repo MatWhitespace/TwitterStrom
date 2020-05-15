@@ -1,4 +1,4 @@
-package Twitter.CoronaVirus.Bolts;
+package Model.CoronaVirus.Bolts;
 
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -8,33 +8,18 @@ import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class SentBolt extends BaseRichBolt {
     private OutputCollector collector;
     private LinkedList<String> stopWords;
 
-    public SentBolt(BufferedReader bf){
-        try{
-            stopWords = getWordsList(bf);
-        }catch (IOException e){
-            System.err.println("Errore lettura file");
-        }
-    }
+    public SentBolt(String[] StopWords){
+        this.stopWords = new LinkedList<>();
+        for (String word: StopWords)
+            stopWords.add(word);
 
-    private LinkedList<String> getWordsList(BufferedReader file) throws IOException {
-        LinkedList<String> result = new LinkedList<>();
-        String temp;
-        while ((temp = file.readLine()) != null)
-            result.add(temp);
-        file.close();
-        return result;
     }
 
     @Override
@@ -47,15 +32,15 @@ public class SentBolt extends BaseRichBolt {
         if (tuple.getSourceStreamId().equals("sent")) {
             boolean verified = tuple.getBooleanByField("verified");
             String tweet = tuple.getStringByField("tweet");
-            tweet.replaceAll("@[A-Za-z0-9]+", " ");
-            tweet.replaceAll("[^a-zA-Z]", " ");
-            String[] tweetPieces = tweet.split(" ");
+            //tweet.replaceAll("@[A-Za-z0-9]+", " ");
+            //tweet.replaceAll("^\\W", " ");
+            String[] tweetPieces = tweet.split("[\\W | \\d]");
             for (int i = 0; i < tweetPieces.length; i++)
-                if (!stopWords.contains(tweetPieces[i]))
+                if (!stopWords.contains(tweetPieces[i].toLowerCase()))
                     if (verified)
-                        collector.emit("verifiedStream", new Values(tweetPieces[i]));
+                        collector.emit("verifiedStream", new Values(tweetPieces[i].toUpperCase()));
                     else
-                        collector.emit("trendStream", new Values(tweetPieces[i]));
+                        collector.emit("trendStream", new Values(tweetPieces[i].toUpperCase()));
         }
     }
 
