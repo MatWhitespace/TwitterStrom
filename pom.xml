@@ -90,7 +90,7 @@
                     <includePluginDependencies>false</includePluginDependencies>
 
                     <classpathScope>compile</classpathScope>
-                    <mainClass>Model.CoronaVirus.CoronaLauncher</mainClass>
+                    <mainClass>Twitter.CoronaVirus.CoronaLauncher</mainClass>
                 </configuration>
             </plugin>
             <plugin>
