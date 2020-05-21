@@ -35,10 +35,6 @@ public class PlaceBolt extends BaseRichBolt {
 
         String[] res = response.getResults().get(0).getFormatted().split(",");
         String[] result = new String[2];
-        for (int i =0; i<res.length; i++){
-            System.err.print(res[i]+"\t");
-        }
-        System.out.println();
         result[0] = res[res.length-2];
         result[1] = res[res.length-1];
         return result;

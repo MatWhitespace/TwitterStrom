@@ -23,7 +23,13 @@ public class AsyncThread extends Thread{
     }
 
     public void finish(){
-        run = false;
+        try {
+            TimeUnit.MINUTES.sleep(this.MINUTES);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }finally{
+            run = false;
+        }
     }
 
     @Override

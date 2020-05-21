@@ -18,13 +18,12 @@ import org.jfree.data.xy.XYSeriesCollection;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ElectionFrame extends JFrame implements GuiComponent {
     private List<Double> datas;
     private JFreeChart histChart, xYChart;
-    private ChartPanel chartPanel;
     private boolean HIST;
     private FileManager fm;
     private final int MINUTES;
@@ -33,7 +32,7 @@ public class ElectionFrame extends JFrame implements GuiComponent {
         this.MINUTES = MINUTES;
         this.fm = fm;
         this.HIST = true;
-        datas = new LinkedList<>();
+        datas = new ArrayList<>(15);
         datas.add(50.0);
         datas.add(50.0);
     }
@@ -46,8 +45,7 @@ public class ElectionFrame extends JFrame implements GuiComponent {
         CategoryDataset categoryDataset = createCategoryDataset();
         histChart = createHist(categoryDataset);
 
-
-        chartPanel = new ChartPanel(histChart);
+        ChartPanel chartPanel = new ChartPanel(histChart);
         chartPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         chartPanel.setBackground(Color.white);
 
@@ -78,8 +76,8 @@ public class ElectionFrame extends JFrame implements GuiComponent {
     }
 
     public void updateData(){
-        BufferedReader br = null;
-        String[] line = null;
+        BufferedReader br;
+        String[] line;
         try {
             br = fm.getRead();
             line = br.readLine().split("\\t");
@@ -89,6 +87,13 @@ public class ElectionFrame extends JFrame implements GuiComponent {
             this.xYChart.getXYPlot().setDataset(createXYDataset());
             fm.stopRead(br);
         }catch (Exception e ){}
+        finally {
+            if (datas.size()>20){
+                datas.remove(0);
+                datas.remove(1);
+            }
+        }
+
     }
 
     private CategoryDataset createCategoryDataset() {

@@ -40,7 +40,7 @@ public class ElectionTopologyBuilder {
             System.out.println("Errore file main");
         }
 
-        String fileName = "/home/matteo/Scrivania/Result.txt";
+        String fileName = "/srv/nfs4/Result.txt";
         FileManager fm = new FileManager(fileName);
         final int campionamento = 1;
 
@@ -72,7 +72,7 @@ public class ElectionTopologyBuilder {
         if (local) {
             LocalCluster cluster = new LocalCluster();
             cluster.submitTopology("Election", conf, builder.createTopology());
-            TimeUnit.MINUTES.sleep(10);
+            TimeUnit.MINUTES.sleep(15);
             timer.finish();
             cluster.killTopology("Election");
             TimeUnit.MINUTES.sleep(1);

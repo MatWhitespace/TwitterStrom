@@ -1,5 +1,6 @@
 package Twitter.CoronaVirus.Bolts;
 
+import FileHandler.FileManager;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.base.BaseWindowedBolt;
@@ -7,6 +8,7 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.windowing.TupleWindow;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
@@ -22,19 +24,15 @@ public class RetweetBolt extends BaseWindowedBolt {
     private ConcurrentHashMap<Long,String> tweet;
     private ConcurrentHashMap<Long,Integer> count;
     private LocalDateTime tomorrowMidnight;
-    private PrintWriter pw;
+    private FileManager fm;
 
 
-    public void prepare(Map<String, Object> map, TopologyContext topologyContext, OutputCollector outputCollector) {
-        tweet = new ConcurrentHashMap<>();
-        count = new ConcurrentHashMap<>();
+    public RetweetBolt(FileManager fm){
+        this.fm = fm;
+        this.tweet = new ConcurrentHashMap<>();
+        this.count = new ConcurrentHashMap<>();
         LocalDateTime todayMidnight = LocalDateTime.of(LocalDate.now(ZoneId.of("Europe/Rome")), LocalTime.MIDNIGHT);
         tomorrowMidnight = todayMidnight.plusDays(1);
-        try{
-            pw = new PrintWriter(new File("RetweetResult.txt"));
-        }catch (IOException e){
-            System.err.println("errore scrittura retweet");
-        }
     }
 
     @Override
@@ -54,9 +52,19 @@ public class RetweetBolt extends BaseWindowedBolt {
                 .map(x -> x.getKey())
                 .collect(toList());
 
-        for(long key : sorted)
-            pw.println(count.get(key)+"\n");
-        pw.println();
+        PrintWriter pw = null;
+        try{
+            pw = fm.getWrite();
+            for(long key : sorted)
+                pw.println(tweet.get(key).replaceAll(System.lineSeparator(),""));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }finally {
+            fm.stopWrite(pw);
+        }
+
 
         LocalDateTime now = LocalDateTime.now();
         if(now.isAfter(tomorrowMidnight)){
@@ -66,10 +74,4 @@ public class RetweetBolt extends BaseWindowedBolt {
         }
     }
 
-    @Override
-    public void cleanup() {
-        pw.println("\nFinish");
-        pw.close();
-        super.cleanup();
-    }
 }
