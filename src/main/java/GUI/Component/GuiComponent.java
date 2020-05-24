@@ -1,6 +1,4 @@
-package GUI.Component;
-
-import java.io.IOException;
+package main.java.GUI.Component;
 
 public interface GuiComponent {
 

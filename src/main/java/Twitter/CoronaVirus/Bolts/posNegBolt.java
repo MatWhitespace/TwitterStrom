@@ -1,6 +1,6 @@
-package Twitter.CoronaVirus.Bolts;
+package main.java.Twitter.CoronaVirus.Bolts;
 
-import FileHandler.FileManager;
+import main.java.FileHandler.FileManager;
 
 import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.apache.storm.tuple.Tuple;
@@ -27,13 +27,14 @@ public class posNegBolt extends BaseWindowedBolt {
             else negative-=sentiment;
         }
         float tot = positive+negative;
-        float pos = positive/tot*100;
-        float neg = negative/tot*100;
+        int pos = (int) (positive/tot*100);
+        int neg = (int) (negative/tot*100);
 
         PrintWriter pw = null;
         try{
             pw = fm.getWrite();
-            pw.println(pos+"\t"+neg);
+            pw.println("Positive"+"\t"+pos);
+            pw.println("Negative"+"\t"+neg);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {

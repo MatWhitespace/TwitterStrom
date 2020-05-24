@@ -1,4 +1,4 @@
-package Twitter.Election.Spouts;
+package main.java.Twitter.Election.Spouts;
 
 import com.byteowls.jopencage.JOpenCageGeocoder;
 import com.byteowls.jopencage.model.JOpenCageForwardRequest;

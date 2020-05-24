@@ -1,9 +1,7 @@
-package GUI.Timer;
+package main.java.GUI.Timer;
 
-import GUI.Component.GuiComponent;
-import org.joda.time.Minutes;
+import main.java.GUI.Component.GuiComponent;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;

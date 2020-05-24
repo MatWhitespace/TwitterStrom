@@ -1,11 +1,10 @@
-package Twitter.Election.Bolts;
+package main.java.Twitter.Election.Bolts;
 
-import FileHandler.FileManager;
+import main.java.FileHandler.FileManager;
 import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.windowing.TupleWindow;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 

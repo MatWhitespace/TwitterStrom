@@ -1,7 +1,7 @@
-package GUI.Component;
+package main.java.GUI.Component;
 
 
-import FileHandler.FileManager;
+import main.java.FileHandler.FileManager;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;

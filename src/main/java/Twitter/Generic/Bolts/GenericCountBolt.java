@@ -1,16 +1,21 @@
-package Twitter.Generic.Bolts;
+package main.java.Twitter.Generic.Bolts;
 
+import main.java.FileHandler.FileManager;
 import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.windowing.TupleWindow;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class GenericCountBolt extends BaseWindowedBolt {
     private HashMap<String, TreeSet<String>> nERCollector;
+    private FileManager fm;
 
-    public GenericCountBolt(){
+    public GenericCountBolt(FileManager fm){
         this.nERCollector = new HashMap<>();
+        this.fm = fm;
     }
 
     @Override
@@ -26,10 +31,23 @@ public class GenericCountBolt extends BaseWindowedBolt {
                 nERCollector.put(type,entity);
             }
         }
-        HashMap<String, List<String>> result = new HashMap<>();
-        for (String key : nERCollector.keySet()){
-            result.put(key,new ArrayList<>(nERCollector.get(key)));
+        PrintWriter pw = null;
+        try{
+            pw = fm.getWrite();
+            for (String key : nERCollector.keySet()){
+                pw.print(key + "\t");
+                for (String value : nERCollector.get(key))
+                    pw.print(value+"\t");
+                pw.println();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }finally{
+            fm.stopWrite(pw);
         }
+
 
     }
 }

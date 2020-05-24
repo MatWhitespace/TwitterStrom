@@ -1,4 +1,4 @@
-package FileHandler;
+package main.java.FileHandler;
 
 import java.io.*;
 import java.util.concurrent.Semaphore;

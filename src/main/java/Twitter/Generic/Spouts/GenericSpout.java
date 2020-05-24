@@ -1,4 +1,4 @@
-package Twitter.Generic.Spouts;
+package main.java.Twitter.Generic.Spouts;
 
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -14,13 +14,12 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 public class GenericSpout extends BaseRichSpout {
     private SpoutOutputCollector collector;
-    private ArrayBlockingQueue<Status> tweets, langTweets;
+    private ArrayBlockingQueue<Status>  langTweets;
     private TwitterStream twitter;
 
     @Override
     public void open(Map<String, Object> map, TopologyContext topologyContext, SpoutOutputCollector spoutOutputCollector) {
         this.collector=spoutOutputCollector;
-        tweets = new ArrayBlockingQueue(100, true);
         langTweets = new ArrayBlockingQueue(100, true);
 
 
@@ -36,7 +35,6 @@ public class GenericSpout extends BaseRichSpout {
                 if(!status.isRetweet()) {
                     if (status.getLang().equals("en"))
                         langTweets.add(status);
-                    tweets.add(status);
                 }
             }
         });
@@ -47,27 +45,21 @@ public class GenericSpout extends BaseRichSpout {
 
     @Override
     public void nextTuple() {
-        Status tweet = tweets.poll();
         Status langTweet = langTweets.poll();
-        if (tweet == null && langTweet == null) {
+        if (langTweet == null) {
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         } else {
-            if (tweet != null) {
-                collector.emit("tot", new Values(tweet));
-            }if (langTweet != null) {
-                collector.emit("lang", new Values(langTweet.getText()));
-            }
+            collector.emit("lang", new Values(langTweet.getText()));
         }
     }
 
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declareStream("tot", new Fields("status"));
         outputFieldsDeclarer.declareStream("lang", new Fields("tweet"));
     }
 }

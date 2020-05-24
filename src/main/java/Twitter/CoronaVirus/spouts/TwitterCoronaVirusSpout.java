@@ -1,4 +1,4 @@
-package Twitter.CoronaVirus.spouts;
+package main.java.Twitter.CoronaVirus.spouts;
 
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;

@@ -1,4 +1,4 @@
-package Twitter.CoronaVirus.Bolts;
+package main.java.Twitter.CoronaVirus.Bolts;
 
 
 import com.byteowls.jopencage.JOpenCageGeocoder;

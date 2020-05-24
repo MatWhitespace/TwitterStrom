@@ -1,15 +1,11 @@
-package Twitter.CoronaVirus.Bolts;
+package main.java.Twitter.CoronaVirus.Bolts;
 
-import FileHandler.FileManager;
-import org.apache.storm.task.OutputCollector;
-import org.apache.storm.task.TopologyContext;
+import main.java.FileHandler.FileManager;
 import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.windowing.TupleWindow;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
