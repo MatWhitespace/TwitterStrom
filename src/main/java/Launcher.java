@@ -17,9 +17,6 @@ import main.java.Twitter.Generic.Spouts.GenericSpout;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.StormSubmitter;
-import org.apache.storm.generated.AlreadyAliveException;
-import org.apache.storm.generated.AuthorizationException;
-import org.apache.storm.generated.InvalidTopologyException;
 import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.topology.base.BaseWindowedBolt;
 
@@ -27,7 +24,6 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 public class Launcher {
 
@@ -166,13 +162,13 @@ public class Launcher {
 
         TopologyBuilder builder = new TopologyBuilder();
 
-        builder.setSpout("TrumpTweets", new TwitterElectionSpout(("Trump")), 1);
-        builder.setSpout("BidenTweets", new TwitterElectionSpout(("Biden")), 1);
+        builder.setSpout("TrumpTweets", new TwitterElectionSpout(("Trump")));
+        builder.setSpout("BidenTweets", new TwitterElectionSpout(("Biden")));
 
-        builder.setBolt("Sentiment", new SentimentBolt(positive,negative),1).allGrouping("TrumpTweets","electionStream").allGrouping("BidenTweets","electionStream");
-        builder.setBolt("Vote", new VoteBolt(), 1).allGrouping("Sentiment","electionStream");
+        builder.setBolt("Sentiment", new SentimentBolt(positive,negative)).allGrouping("TrumpTweets","electionStream").allGrouping("BidenTweets","electionStream");
+        builder.setBolt("Vote", new VoteBolt()).allGrouping("Sentiment","electionStream");
 
-        builder.setBolt("Report", new ReportBolt(fm).withWindow(new BaseWindowedBolt.Count(10), new BaseWindowedBolt.Count(10)), 1).allGrouping("Vote","electionStream");
+        builder.setBolt("Report", new ReportBolt(fm).withWindow(new BaseWindowedBolt.Count(10), new BaseWindowedBolt.Count(10))).allGrouping("Vote","electionStream");
 
         return builder;
 
