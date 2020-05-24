@@ -8,7 +8,7 @@ Tutte le topologie sono basate sull'analisi in stremaing di tweets tramite la li
 
 Dopo aver installato il cluster apache storm e il server zookeeper ed aver inserito nel path di sistema le directory bin di entrami, esegure su quattro terminali diversi i seguenti comandi:
 
-'''bash
+```bash
 zkServer.sh start
 zkCli.sh
 
@@ -17,7 +17,7 @@ storm nimbus
 storm supervisor
 
 storm ui
-'''
+```
 
 a questo punto al link [storm ui] (localhost:8080) si potrà visualizzare lo stato del production cluster.
 
@@ -25,18 +25,18 @@ a questo punto al link [storm ui] (localhost:8080) si potrà visualizzare lo sta
 
 Nella root directory (contente il file pom.xml) assemblare il jar tramite il comando maven:
 
-'''bash
+```bash
 mvn assembly:assembly
-'''
+```
 
 verrà creara una directory target in cui è presente il file jar **TitterStorm-1.0-SNAPSHOT-jar-with-dependencies.jar**, successivemnte spostarsi nella directory target con il comando:
 
-'''bash
+```bash
 cd target
-'''
+```
 
 infine eseguire il run delle topologie con il comando:
 
-'''bash
+```bash
 storm jar storm jar TwitterStorm-1.0-SNAPSHOT-jar-with-dependencies.jar main.java.Launcher
-'''
+```
