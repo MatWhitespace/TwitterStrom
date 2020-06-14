@@ -1,4 +1,4 @@
-# Twitter Analysis with Apache Storm
+# Twitter Stream Analysis with Apache Storm
 
 Il progetto comprende tre topologie storm: la prima è un sondaggio per le elezioni presidenziali USA, la seconda estrae delle statistiche rispetto all'epidemia di covid-19 e l'ultima è un analisi genrica di NER su testo.
 
