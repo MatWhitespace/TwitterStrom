@@ -25,10 +25,10 @@ public class TwitterCoronaVirusSpout extends BaseRichSpout {
         retwetted = new ArrayBlockingQueue(100,true);
 
         ConfigurationBuilder cb = new ConfigurationBuilder()
-                .setOAuthConsumerKey("ii6oFK75SHTniv70ALoDnw2vN")
-                .setOAuthConsumerSecret("Gd6CVOhuysjKPpdh8t99OTXZFUMaPNAV0Ma3ePwrEG3Jg5jxLm")
-                .setOAuthAccessToken("1235255325869174788-iDQ6HJ8E4PcZv32h3Z228TAl57Q4w5")
-                .setOAuthAccessTokenSecret("Gu14r8wj06nXaqwtEkPrdDJ8e9YqlDbjttcvoLwbafNob");
+                .setOAuthConsumerKey("****")
+                .setOAuthConsumerSecret("***")
+                .setOAuthAccessToken("***")
+                .setOAuthAccessTokenSecret("***");
         TwitterStreamFactory tf = new TwitterStreamFactory(cb.build());
         twitter = tf.getInstance();
         twitter.addListener(new StatusAdapter() {
